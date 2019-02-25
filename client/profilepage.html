@@ -11,28 +11,49 @@
   <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.8.0/firebase-firestore.js"></script>
-  <script src="profilepage.js"></script>
 </head>
 
 <body>
-    <div class="navbar">
-        <img src="images/progocity-main-logo.png" class="logo1" />
-        <img src="images/Logo2a.png" class="logo2" />
-        <a href="index.html" class="logout">Log Out</a>
-        <a href="#about" class="about">About</a>
-        <a href="faqs.html" class="faq">FAQ</a>
-        <a href="contact.html" class="contact">Contact</a>
-        <a href="home.html" class="home"img src="./images/logo-home.png"></a>
-      </div>
-    
-  <div class="profile-top">You are currently Logged In</div>
-      <div class="points-of-interest">Points of interest</div>
-      <div class="upgrade-to-openstir">Upgrade and Increase Your Reach Even Further</div>
+  <div class="navbar">
+    <img src="images/progocity-main-logo.png" class="logo1" />
+    <img src="images/Logo2a.png" class="logo2" />
+    <a href="index.html" class="logout">Log Out</a>
+    <a href="#about" class="about">About</a>
+    <a href="faqs.html" class="faq">FAQ</a>
+    <a href="contact.html" class="contact">Contact</a>
+    <a href="home.html" class="home" img src="./images/logo-home.png"></a>
+  </div>
+
+  <div class="profile-user-id">Hello Again, <span id="user-name"></span>!</div>
+  <!-- <div class="profile-top">You are currently Logged In</div> -->
+
+  <!-- the user's recipes -->
+  <hr>
+  <div id="recipes-cont">
+    <h3>Your recipes (<span id="recipes-count"></span>):</h3>
+    <ol id="user-recipes"></ol>
+  </div>
+  <hr>
+
+  <!-- recipes debug section -->
+  <hr>
+  <div id="debug-recipes-cont">
+    <h3>[debug only] All Recipes <span id="debug-recipes-count"></span>)</h3>
+    <ol id="debug-recipe-list"></ol>
+    <button id="debug-btn-add-recipes">Add 100 recipes</button>
+  </div>
+  <hr>
+
+  <div class="points-of-interest">Points of interest</div>
+  <div class="upgrade-to-openstir">Upgrade and Increase Your Reach Even Further</div>
   <div id="userData"></div>
-  <div class="profile-user-id">Hello Again (insert user name from database)</div>
   <div class="scheduling">your Schedule</div>
   <div class="favoriteContacts">Your Top Contacts</div>
   <div>
-  <div class="targeted">targeted</div>
-  <div class="actions-taken">actions-taken</div>
+    <div class="targeted">targeted</div>
+    <div class="actions-taken">actions-taken</div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="profilepage.js"></script>
 </body>
