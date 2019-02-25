@@ -41,6 +41,19 @@ async function getRandomRecipeIds(n) {
   return ids;
 }
 
+async function getRecipesById(ids) {
+  const recipeColl = firebase.firestore().collection("recipes");
+
+  // get all recipe data of given ids
+  return await Promise.all(ids.map(async id => {
+    const snap = await recipeColl.where(firebase.firestore.FieldPath.documentId(), '==', id).get();
+    if (snap.docs.length) {
+      return snap.docs[0].data();
+    }
+    return null;    // id does not exist (anymore)
+  }));
+}
+
 async function getHighestRecipeIndex() {
   const snap = await firebase.firestore().collection("recipes").orderBy("index", 'desc').limit(1).get();
 

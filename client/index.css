@@ -4,7 +4,7 @@ html {
 body {
   background-color: #f8f1ebea;
   margin: 0;
-  overflow: hidden;
+  overflow: auto; /* TODO: change back to hidden when load bug fixed */
   padding-top: 70px;
 }
 body.loaded {

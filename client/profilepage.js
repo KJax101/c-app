@@ -19,11 +19,18 @@ firebase.initializeApp(config);
 $('#user-name').text('(loading...)');
 firebase.auth().onAuthStateChanged(renderUser);
 
-function renderUser(user) {
+async function renderUser(user) {
   if (user) {
     // User is signed in.
     const { uid, displayName, email } = user;
     $('#user-name').text(displayName + ' (' + email + ')');
+
+    const snap = await firebase.firestore().collection('users').where(firebase.firestore.FieldPath.documentId(), '==', uid).get();
+    if (!snap.docs.length) {
+      alert('something went wrong. this user has no entry in `users` collection!');
+    }
+    
+    showUserRecipes(snap.docs[0].data());
   }
   else {
     $('#user-name').text('<anonymous>');
@@ -35,13 +42,21 @@ function renderUser(user) {
 // ################################################################################################
 
 
-//   firebase.firestore().doc("users/id").get().then(user => {
-//     if (!user.exists) {
-//       return;
-//     }
-//     const userData = user.data();
-//   })
-
+async function showUserRecipes(user) {
+  const recipeIds = user.recipes;
+  if (recipeIds) {
+    const recipes = await getRecipesById(recipeIds);
+    if (recipes) {
+      $('#user-recipes-count').text(recipes.length);
+      const $list = $('#user-recipes');
+      $list.empty();     // clear list
+      recipes.forEach(recipe => {
+        const $li = $(`<li>${recipe.title}</li>`);
+        $list.append($li);
+      });
+    }
+  }
+}
 //   firebase.firestore().collection("users").limit(4).get().then(users => {
 //     if (!users.empty) {
 //       const userData = users.docs[0].data();
@@ -86,21 +101,10 @@ firebase.firestore().collection("recipes").onSnapshot(function (querySnapshot) {
 
 
 async function debugShowRandomRecipes(n) {
-  const recipeColl = firebase.firestore().collection("recipes");
-
   $('#debug-random-recipes').text('loading...');
 
   // get recipe ids
   const ids = await getRandomRecipeIds(n);
-
-  // get all recipe data of given ids
-  const recipes = await Promise.all(ids.map(async id => {
-    const snap = await recipeColl.where(firebase.firestore.FieldPath.documentId(), '==', id).get();
-    if (snap.docs.length) {
-      return snap.docs[0].data();
-    }
-    return null;    // id does not exist (anymore)
-  }));
-
+  const recipes = await getRecipesById(ids);
   $('#debug-random-recipes').text(recipes.map(r => r && r.title || '<not found>').join('\n'));
 }
