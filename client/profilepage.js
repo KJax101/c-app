@@ -65,14 +65,7 @@ function renderUser(user) {
 // Recipe Debugging
 // ################################################################################################
 
-// "Add recipes" button
-$('#debug-btn-add-recipes').click(async (evt) => {
-  // add 20 recipes for debugging purposes
-  debugAddRecipes(20);
-});
-
-
-// "all recipes" list
+// maintain the "all recipes" list
 // see basic example in official documentation: https://firebase.google.com/docs/firestore/query-data/get-data
 const $recipeList = $('#debug-recipe-list');
 $recipeList.text('loading...');
@@ -91,3 +84,23 @@ firebase.firestore().collection("recipes").onSnapshot(function (querySnapshot) {
   });
 });
 
+
+async function debugShowRandomRecipes(n) {
+  const recipeColl = firebase.firestore().collection("recipes");
+
+  $('#debug-random-recipes').text('loading...');
+
+  // get recipe ids
+  const ids = await getRandomRecipeIds(n);
+
+  // get all recipe data of given ids
+  const recipes = await Promise.all(ids.map(async id => {
+    const snap = await recipeColl.where(firebase.firestore.FieldPath.documentId(), '==', id).get();
+    if (snap.docs.length) {
+      return snap.docs[0].data();
+    }
+    return null;    // id does not exist (anymore)
+  }));
+
+  $('#debug-random-recipes').text(recipes.map(r => r && r.title || '<not found>').join('\n'));
+}

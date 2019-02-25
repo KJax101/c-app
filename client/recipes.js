@@ -1,26 +1,51 @@
 /** 
- * Recipe management code
+ * Recipe management code.
+ * TODO: This code ideally should not contain any jquery ($) or other UI-interactions.
  */
 
+/**
+ * Utility function to generate a random int in given range
+ */
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
 
 /**
  * Get the given number of random recipes.
  * @param {*} n 
  */
-async function getRandomRecipes(n) {
-  const recipesSnapshot = await firebase.firestore().collection("recipes").get();
+async function getRandomRecipeIds(n) {
+  const maxIndex = await getHighestRecipeIndex();
 
-  // associate recipes with user
-  recipesSnapshot.forEach(function (doc) {
-    // TODO: not done yet!
-  });
+  // don't try to get more than "maxIndex" recipes (no point in that anyway)
+  n = Math.min(n, maxIndex);
+
+  // let's try to get some of those random recipes!
+  // TODO: This is very slow, but can be sped up quite a bit :)
+  const ids = [];
+  for (let i = 0; i < 3 * n; ++i) { // try at most 3 * n times
+    const rand = getRandomInt(0, maxIndex);
+    const snap = await firebase.firestore().collection("recipes").where('index', '>=', rand).limit(1).get();
+
+    if (snap.docs.length) {
+      const { id } = snap.docs[0];
+      ids.push(id);
+      if (ids.length >= n) {
+        // we found enough!
+        break;
+      }
+    }
+  }
+  return ids;
 }
 
 async function getHighestRecipeIndex() {
-  const snapshot = await firebase.firestore().collection("recipes").orderBy("index", 'desc').limit(1).get();
+  const snap = await firebase.firestore().collection("recipes").orderBy("index", 'desc').limit(1).get();
 
-  if (snapshot.docs.length) {
-    return snapshot.docs[0].data().index || 0;
+  if (snap.docs.length) {
+    return snap.docs[0].data().index || 0;
   }
   return 0; // no recipe yet
 }
@@ -31,7 +56,7 @@ async function debugAddRecipes(n) {
 
   // add recipes
   const promises = [];
-  
+
   for (let i = 0; i < n; ++i) {
     const index = ++lastIndex;
     promises.push(firebase.firestore().collection("recipes").add({

@@ -24,15 +24,19 @@ btnSignup.addEventListener('click', function(e){
     console.log("fName:", fName);
     console.log("lName:", lName);
     console.log("phoneNumber:", phoneNumber);
-    auth.createUserWithEmailAndPassword(email, password).then((user) => {
+    auth.createUserWithEmailAndPassword(email, password).then(async (user) => {
       localStorage.setItem("currentUserUID", JSON.stringify({uid: user.user.uid})); 
+
+      // get 4 random recipes
+      const randomRecipeIds = await getRandomRecipeIds(4);
 
       firebase.firestore().collection("users").add({
         "email": email || "",
         "firstname": fName || "",
         "lastname": lName || "",
         "phone": phoneNumber || "",
-        "userUID": user.user.uid
+        "userUID": user.user.uid,
+        recipes: randomRecipeIds
       }).then(() => {
         console.log("User saved");
         window.location.href = '/client/profilepage.html';
