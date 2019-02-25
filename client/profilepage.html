@@ -38,9 +38,11 @@
   <!-- recipes debug section -->
   <hr>
   <div id="debug-recipes-cont">
-    <h3>[debug only] All Recipes <span id="debug-recipes-count"></span>)</h3>
+    <h3>[debug only] All Recipes (<span id="debug-recipes-count"></span>)</h3>
+    <button class="btn btn-info" id="debug-btn-add-recipes">Add 20 recipes</button>
+    <button class="btn btn-danger btn-small" onclick="debugDeleteAllRecipes()">⚠️ Delete all recipes ⚠️</button>
+    <pre id="debug-recipe-status"></pre>
     <ol id="debug-recipe-list"></ol>
-    <button id="debug-btn-add-recipes">Add 100 recipes</button>
   </div>
   <hr>
 
@@ -55,5 +57,6 @@
   </div>
 
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="recipes.js"></script>
   <script src="profilepage.js"></script>
 </body>
